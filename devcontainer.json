@@ -1,0 +1,12 @@
+{
+    "name": "elixir-1.8-otp-27",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "portsAttributes": {
+        "3000": {
+            "label": "Hello Remote World",
+            "onAutoForward": "notify"
+        }
+    }
+}
