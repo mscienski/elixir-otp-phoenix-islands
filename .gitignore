@@ -21,3 +21,6 @@ islands_engine-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/
+
+# VS code settings
+.vscode/
