@@ -1,0 +1,23 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Docker compose up
+      run: docker compose -f docker-compose.ci.yml up -d --build
+    - name: Check formatting
+      run: docker compose -f docker-compose.ci.yml run islands_engine mix format --check-formatted
+    - name: Run mix test in docker container
+      run: docker compose -f docker-compose.ci.yml run islands_engine mix test
+    - name: Teardown
+      if: success() || failure()
+      run: docker compose -f docker-compose.ci.yml down
