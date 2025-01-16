@@ -6,7 +6,7 @@ defmodule GuessesTest do
 
   describe "new/0" do
     test "creates a guesses struct" do
-      assert %Guesses{hits: %MapSet{}, misses: %MapSet{}} = Guesses.new()
+      assert %Guesses{hits: %MapSet{}, misses: %MapSet{}} == Guesses.new()
     end
   end
 end
