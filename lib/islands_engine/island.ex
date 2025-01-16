@@ -4,6 +4,12 @@ defmodule IslandsEngine.Island do
   @enforce_keys [:coordinates, :hit_coordinates]
   defstruct [:coordinates, :hit_coordinates]
 
+  @atoll :atoll
+  @dot :dot
+  @l_shape :l_shape
+  @s_shape :s_shape
+  @square :square
+
   def new(type, %Coordinate{} = upper_left) do
     with [_ | _] = offsets <- offsets(type),
          %MapSet{} = coordinates <- add_coordinates(offsets, upper_left) do
@@ -13,15 +19,36 @@ defmodule IslandsEngine.Island do
     end
   end
 
-  defp offsets(:square), do: [{0, 0}, {0, 1}, {1, 0}, {1, 1}]
+  def overlaps?(%Island{} = existing_island, %Island{} = new_island) do
+    not MapSet.disjoint?(existing_island.coordinates, new_island.coordinates)
+  end
 
-  defp offsets(:atoll), do: [{0, 0}, {0, 1}, {1, 1}, {2, 0}, {2, 1}]
+  def guess(%Island{} = island, %Coordinate{} = coordinate) do
+    case MapSet.member?(island.coordinates, coordinate) do
+      true ->
+        hit_coordinates = MapSet.put(island.hit_coordinates, coordinate)
+        {:hit, %{island | hit_coordinates: hit_coordinates}}
 
-  defp offsets(:dot), do: [{0, 0}]
+      false ->
+        :miss
+    end
+  end
 
-  defp offsets(:l_shape), do: [{0, 0}, {1, 0}, {2, 0}, {2, 1}]
+  def forested?(%Island{} = island) do
+    MapSet.equal?(island.coordinates, island.hit_coordinates)
+  end
 
-  defp offsets(:s_shape), do: [{0, 1}, {0, 2}, {1, 0}, {1, 1}]
+  def types(), do: [@atoll, @dot, @l_shape, @s_shape, @square]
+
+  defp offsets(@atoll), do: [{0, 0}, {0, 1}, {1, 1}, {2, 0}, {2, 1}]
+
+  defp offsets(@dot), do: [{0, 0}]
+
+  defp offsets(@l_shape), do: [{0, 0}, {1, 0}, {2, 0}, {2, 1}]
+
+  defp offsets(@s_shape), do: [{0, 1}, {0, 2}, {1, 0}, {1, 1}]
+
+  defp offsets(@square), do: [{0, 0}, {0, 1}, {1, 0}, {1, 1}]
 
   defp offsets(_), do: {:error, :invalid_island_type}
 
