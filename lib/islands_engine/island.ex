@@ -24,13 +24,11 @@ defmodule IslandsEngine.Island do
   end
 
   def guess(%Island{} = island, %Coordinate{} = coordinate) do
-    case MapSet.member?(island.coordinates, coordinate) do
-      true ->
-        hit_coordinates = MapSet.put(island.hit_coordinates, coordinate)
-        {:hit, %{island | hit_coordinates: hit_coordinates}}
-
-      false ->
-        :miss
+    if MapSet.member?(island.coordinates, coordinate) do
+      hit_coordinates = MapSet.put(island.hit_coordinates, coordinate)
+      {:hit, %{island | hit_coordinates: hit_coordinates}}
+    else
+      :miss
     end
   end
 
